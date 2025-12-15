@@ -1,0 +1,8 @@
+{
+  "name": "Christ Life Bweyogerere (CLB)",
+  "description": "A comprehensive mobile app for the CLB church community featuring live streaming, bible study, ministry groups, kids content, and an AI voice assistant.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
