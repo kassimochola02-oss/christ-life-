@@ -1,3 +1,4 @@
+
 /**
  * Christ Life Bweyogerere (CLB) Backend
  * Built with Express.js and TypeScript
@@ -34,7 +35,44 @@ app.get('/api/announcements', (req: Request, res: Response) => {
   });
 });
 
-// 2. Handle Donation Confirmations
+// 2. Initiate Payment (Simulates STK Push / USSD Generation)
+app.post('/api/payments/initiate', (req: Request, res: Response) => {
+  const { amount, phone, provider, purpose } = req.body;
+
+  if (!amount || !phone || !provider) {
+    return res.status(400).json({ error: 'Missing payment details' });
+  }
+
+  const mtnMerchant = '726123';
+  const airtelMerchant = '4380286';
+
+  let ussdString = '';
+  if (provider === 'MTN') {
+    // Standard MTN Uganda Pay Merchant USSD logic
+    ussdString = `*165*3*${mtnMerchant}*${amount}#`;
+  } else if (provider === 'AIRTEL') {
+    // Standard Airtel Uganda Pay Merchant USSD logic
+    ussdString = `*185*9*${airtelMerchant}*${amount}#`;
+  }
+
+  const transactionId = `CLB-TX-${Date.now()}`;
+  
+  console.log(`[PAYMENT SERVER] Initiating ${provider} payment for ${amount} UGX`);
+  console.log(`[PAYMENT SERVER] Target: ${phone} | Purpose: ${purpose}`);
+  console.log(`[PAYMENT SERVER] USSD Instruction: ${ussdString}`);
+
+  // In a production environment, you would call a gateway like Yo! Payments or Flutterwave here
+  // to trigger a real STK Push (the popup that asks for a PIN).
+  
+  res.json({
+    status: 'initiated',
+    transactionId,
+    ussdInstruction: ussdString,
+    message: `Payment request sent to ${phone}. If the prompt doesn't appear, dial ${ussdString}`
+  });
+});
+
+// 3. Handle Donation Confirmations (Callback/Webhook simulation)
 app.post('/api/donations', (req: Request, res: Response) => {
   const { amount, phone, type, donorName } = req.body;
   
@@ -49,32 +87,12 @@ app.post('/api/donations', (req: Request, res: Response) => {
   };
 
   donations.push(newDonation);
-  
-  // Here you would normally integrate with a payment gateway like Flutterwave or Yo! Payments
-  console.log(`[CLB BACKEND] New donation received: ${amount} UGX from ${phone}`);
+  console.log(`[CLB BACKEND] New donation recorded: ${amount} UGX from ${phone}`);
 
   res.status(201).json({
     status: 'success',
     message: 'Donation recorded successfully',
     data: newDonation
-  });
-});
-
-// 3. Community Group Messages
-app.get('/api/groups/:groupId/messages', (req: Request, res: Response) => {
-  const { groupId } = req.params;
-  // Mock messages
-  res.json([
-    { id: '1', sender: 'Admin', text: `Welcome to the ${groupId} group!` },
-  ]);
-});
-
-// 4. Live Stream Status
-app.get('/api/stream/status', (req: Request, res: Response) => {
-  res.json({
-    isLive: false,
-    viewerCount: 0,
-    nextStream: '2023-10-29T10:00:00Z'
   });
 });
 

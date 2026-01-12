@@ -2,7 +2,7 @@ import { Announcement, Song, BibleVerse } from './types';
 
 export const ZOOM_MEETING_URL = 'https://us06web.zoom.us/j/84928699926?pwd=motRlw9xALYfwiQutViLFYOBB4NVb8.1';
 export const BANK_ACCOUNT_NUMBER = '6006741566';
-export const BANK_NAME = 'Centenary Bank';
+export const BANK_NAME = 'ABSA Bank';
 export const ACCOUNT_NAME = 'Christ Life Bweyogerere';
 export const CHURCH_LOCATION = 'North Park Plaza, Opp. UNBS HDQTRS, Bweyogerere';
 

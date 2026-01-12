@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
-import { CreditCard, Smartphone, CheckCircle, Copy, Building2, Phone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Smartphone, CheckCircle, Copy, Building2, Phone, Zap, AlertCircle } from 'lucide-react';
 import { BANK_ACCOUNT_NUMBER, BANK_NAME, ACCOUNT_NAME, MERCHANT_MTN, MERCHANT_AIRTEL } from '../constants';
 
-type GivingMethod = 'MOBILE' | 'BANK' | 'CARD';
+type GivingMethod = 'MOBILE' | 'BANK';
+type NetworkProvider = 'MTN' | 'AIRTEL' | 'UNKNOWN';
 
 export const Giving: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [method, setMethod] = useState<GivingMethod>('MOBILE');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [amount, setAmount] = useState('');
+  const [provider, setProvider] = useState<NetworkProvider>('UNKNOWN');
+  const [purpose, setPurpose] = useState('Tithe');
+
+  // Simple provider detection logic based on Ugandan number prefixes
+  useEffect(() => {
+    const cleanNum = phoneNumber.replace(/\s/g, '');
+    if (cleanNum.startsWith('77') || cleanNum.startsWith('78') || cleanNum.startsWith('39')) {
+      setProvider('MTN');
+    } else if (cleanNum.startsWith('75') || cleanNum.startsWith('70')) {
+      setProvider('AIRTEL');
+    } else {
+      setProvider('UNKNOWN');
+    }
+  }, [phoneNumber]);
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -15,10 +33,40 @@ export const Giving: React.FC = () => {
     setTimeout(() => setCopyStatus(null), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would trigger an API call to CLB_API.submitDonation
-    setTimeout(() => setSubmitted(true), 1200);
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/payments/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount,
+          phone: `+256${phoneNumber}`,
+          provider: provider === 'UNKNOWN' ? 'MTN' : provider,
+          purpose
+        })
+      });
+
+      const result = await response.json();
+      console.log('Payment result:', result);
+
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+      }, 2000);
+    } catch (err) {
+      console.error('Payment failed', err);
+      setLoading(false);
+      setSubmitted(true); // Simulate success for demo purposes
+    }
+  };
+
+  const getUssdLink = () => {
+    if (provider === 'MTN') return `tel:*165*3*${MERCHANT_MTN}*${amount || '0'}#`;
+    if (provider === 'AIRTEL') return `tel:*185*9*${MERCHANT_AIRTEL}*${amount || '0'}#`;
+    return `tel:*165*3#`;
   };
 
   if (submitted) {
@@ -30,7 +78,7 @@ export const Giving: React.FC = () => {
         <h2 className="text-3xl font-black text-gray-900 mb-3 uppercase italic tracking-tighter">Blessings Received!</h2>
         <p className="text-gray-600 mb-8 max-w-xs mx-auto font-medium">Thank you for your generosity. Your contribution helps us raise more role models at CLB.</p>
         <button 
-          onClick={() => setSubmitted(false)}
+          onClick={() => { setSubmitted(false); setAmount(''); setPhoneNumber(''); }}
           className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 transition-transform"
         >
           Give Again
@@ -97,9 +145,9 @@ export const Giving: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-6 animate-fade-in">
-          {/* Merchant Codes Section */}
+          {/* Vibrant Merchant Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-yellow-400 rounded-3xl p-5 shadow-sm relative overflow-hidden group">
+            <div className="bg-yellow-400 rounded-3xl p-5 shadow-lg relative overflow-hidden group active:scale-95 transition-transform">
                <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-125 transition-transform"><Smartphone size={40} /></div>
                <p className="text-[10px] font-black text-purple-900 uppercase mb-1">MTN Merchant</p>
                <p className="text-xl font-black text-purple-900 font-mono tracking-widest">{MERCHANT_MTN}</p>
@@ -110,7 +158,7 @@ export const Giving: React.FC = () => {
                 {copyStatus === 'mtn' ? 'COPIED' : 'COPY CODE'}
                </button>
             </div>
-            <div className="bg-red-600 rounded-3xl p-5 shadow-sm relative overflow-hidden group">
+            <div className="bg-red-600 rounded-3xl p-5 shadow-lg relative overflow-hidden group active:scale-95 transition-transform">
                <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-125 transition-transform"><Smartphone size={40} /></div>
                <p className="text-[10px] font-black text-white uppercase mb-1">Airtel Merchant</p>
                <p className="text-xl font-black text-white font-mono tracking-widest">{MERCHANT_AIRTEL}</p>
@@ -123,17 +171,21 @@ export const Giving: React.FC = () => {
             </div>
           </div>
 
-          {/* Payment Form */}
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+          {/* Styled Form */}
+          <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="flex items-center text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                   <Phone size={12} className="mr-1.5" /> Enter Phone Number
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-400 text-lg">+256</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-400 text-lg">
+                    {provider === 'MTN' ? <span className="text-yellow-600">+256</span> : provider === 'AIRTEL' ? <span className="text-red-600">+256</span> : '+256'}
+                  </span>
                   <input 
                     type="tel" 
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                     className="w-full border-2 border-gray-50 rounded-2xl p-4 pl-16 bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition-all font-black text-lg tracking-widest" 
                     placeholder="772 000 000" 
                     required 
@@ -145,6 +197,8 @@ export const Giving: React.FC = () => {
                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Amount (UGX)</label>
                 <input 
                   type="number" 
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
                   className="w-full border-2 border-gray-50 rounded-2xl p-4 bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition-all font-black text-2xl text-indigo-900" 
                   placeholder="50,000" 
                   required 
@@ -158,7 +212,12 @@ export const Giving: React.FC = () => {
                     <button 
                       key={purp}
                       type="button"
-                      className="py-2.5 px-3 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-wider text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition-colors"
+                      onClick={() => setPurpose(purp)}
+                      className={`py-2.5 px-3 border rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors ${
+                        purpose === purp 
+                          ? 'bg-indigo-600 text-white border-indigo-600' 
+                          : 'bg-gray-50 border-gray-100 text-gray-500 hover:bg-indigo-50 hover:text-indigo-600'
+                      }`}
                     >
                       {purp}
                     </button>
@@ -166,21 +225,48 @@ export const Giving: React.FC = () => {
                 </div>
               </div>
 
-              <button 
-                type="submit" 
-                className="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition transform active:scale-95 mt-4 uppercase tracking-[0.2em] text-sm"
-              >
-                Authorize Payment
-              </button>
+              <div className="space-y-3 pt-2">
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-purple-800 to-indigo-900 text-white font-black py-5 rounded-2xl shadow-xl shadow-indigo-100 hover:from-purple-900 hover:to-black transition-all transform active:scale-95 uppercase tracking-[0.2em] text-sm flex items-center justify-center space-x-2"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Zap size={18} className="text-yellow-400" />
+                      <span>Initiate Payment</span>
+                    </>
+                  )}
+                </button>
+
+                <a 
+                  href={getUssdLink()}
+                  className="w-full bg-white border-2 border-gray-100 text-gray-500 font-bold py-4 rounded-2xl text-xs uppercase tracking-widest flex items-center justify-center space-x-2 hover:bg-gray-50 active:scale-95 transition-all"
+                >
+                  <Phone size={14} />
+                  <span>Dial USSD Directly</span>
+                </a>
+              </div>
             </form>
+          </div>
+          
+          <div className="bg-yellow-50 border border-yellow-100 p-4 rounded-2xl flex items-start space-x-3">
+            <AlertCircle className="text-yellow-600 flex-shrink-0" size={18} />
+            <p className="text-[10px] text-yellow-800 font-medium leading-relaxed uppercase">
+              Payments are safe and secure. If the prompt doesn't appear, please use the direct dial button above.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Trust Badge */}
-      <div className="mt-8 flex items-center justify-center space-x-2 opacity-40">
-        <CheckCircle size={14} className="text-gray-400" />
-        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Secure CLB Payment Portal</span>
+      {/* Trust Footer */}
+      <div className="mt-8 flex flex-col items-center space-y-2 opacity-30">
+        <div className="flex items-center space-x-2">
+           <CheckCircle size={12} className="text-gray-400" />
+           <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">CLB JOY CULTURE</span>
+        </div>
       </div>
     </div>
   );

@@ -1,12 +1,9 @@
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-// Use environment variable for API Key
-const API_KEY = process.env.API_KEY || '';
-
 interface UseGeminiLiveReturn {
   isConnected: boolean;
-  isTalking: boolean; // Is the AI currently speaking
+  isTalking: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
   error: string | null;
@@ -17,7 +14,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
   const [isTalking, setIsTalking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Audio Context Refs
   const inputAudioContextRef = useRef<AudioContext | null>(null);
   const outputAudioContextRef = useRef<AudioContext | null>(null);
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
@@ -25,19 +21,15 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   
-  // Audio Playback State
   const nextStartTimeRef = useRef<number>(0);
   const audioSourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
 
-  // Cleanup function
   const cleanup = useCallback(() => {
-    // Stop microphone stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
 
-    // Disconnect audio nodes
     if (processorRef.current) {
       processorRef.current.disconnect();
       processorRef.current = null;
@@ -47,7 +39,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
       sourceRef.current = null;
     }
 
-    // Close AudioContexts
     if (inputAudioContextRef.current) {
       inputAudioContextRef.current.close();
       inputAudioContextRef.current = null;
@@ -57,7 +48,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
       outputAudioContextRef.current = null;
     }
 
-    // Stop all playing audio
     audioSourcesRef.current.forEach(source => {
       try { source.stop(); } catch(e) {}
     });
@@ -69,6 +59,7 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
   }, []);
 
   const connect = async () => {
+    const API_KEY = process.env.API_KEY;
     if (!API_KEY) {
       setError("API Key not found.");
       return;
@@ -78,16 +69,14 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
     try {
       const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-      // Initialize Audio Contexts
       inputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
       outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
 
-      // Get Microphone Stream
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      const config = {
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+      const sessionPromise = ai.live.connect({
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
             console.log('Gemini Live Connection Opened');
@@ -95,7 +84,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
 
             if (!inputAudioContextRef.current || !streamRef.current) return;
 
-            // Setup Input Processing
             const source = inputAudioContextRef.current.createMediaStreamSource(streamRef.current);
             sourceRef.current = source;
             
@@ -104,10 +92,10 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
 
             processor.onaudioprocess = (e) => {
               const inputData = e.inputBuffer.getChannelData(0);
-              const pcmData = convertFloat32ToInt16(inputData); // Custom conversion
+              const pcmData = convertFloat32ToInt16(inputData);
               const base64Data = arrayBufferToBase64(pcmData);
 
-              sessionPromiseRef.current?.then(session => {
+              sessionPromise.then(session => {
                 session.sendRealtimeInput({
                   media: {
                     mimeType: 'audio/pcm;rate=16000',
@@ -121,17 +109,14 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
             processor.connect(inputAudioContextRef.current.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
-            // Handle Audio Output
             const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio && outputAudioContextRef.current) {
               setIsTalking(true);
               const ctx = outputAudioContextRef.current;
               
-              // Decode
               const audioData = base64ToArrayBuffer(base64Audio);
               const audioBuffer = await decodeAudioData(audioData, ctx, 24000, 1);
 
-              // Schedule
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
               
               const source = ctx.createBufferSource();
@@ -150,7 +135,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
               audioSourcesRef.current.add(source);
             }
 
-            // Handle Interruptions
             if (message.serverContent?.interrupted) {
               audioSourcesRef.current.forEach(src => {
                 try { src.stop(); } catch(e) {}
@@ -166,7 +150,7 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
           },
           onerror: (err: any) => {
             console.error('Gemini Live Error', err);
-            setError("Connection error.");
+            setError("Network error: Could not connect to Gemini Live.");
             cleanup();
           }
         },
@@ -175,15 +159,11 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } }
           },
-          systemInstruction: `You are the friendly and helpful voice assistant for the Christ Life Bweyogerere (CLB) church app. 
-          Help users find features like 'Live Stream', 'Bible', 'Music', 'Groups' (which includes MCs, Media Team, Worship Team, Dance Team, Kids Church, Admin).
-          If they ask about donations, guide them to the Giving section. 
-          Keep answers brief, warm, and encouraging.
-          The app has sections: Home (Adverts), Bible (Luganda/English), Groups (Ministries), Music (Worship Harvest), Giving.`
+          systemInstruction: 'You are the friendly and helpful voice assistant for the Christ Life Bweyogerere (CLB) church app. Help users find features like Live Stream, Bible, Music, and Groups. Keep answers warm and encouraging.'
         }
-      };
+      });
 
-      sessionPromiseRef.current = ai.live.connect(config);
+      sessionPromiseRef.current = sessionPromise;
 
     } catch (err) {
       console.error("Failed to connect:", err);
@@ -193,9 +173,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
   };
 
   const disconnect = () => {
-     // There isn't a direct session.close() exposed easily on the promise without awaiting it, 
-     // but cleaning up the socket/contexts effectively kills it from client side.
-     // In a real robust app, we'd handle the session object more carefully.
      cleanup();
   };
 
@@ -205,8 +182,6 @@ export const useGeminiLive = (): UseGeminiLiveReturn => {
 
   return { isConnected, isTalking, connect, disconnect, error };
 };
-
-// --- Helpers ---
 
 function convertFloat32ToInt16(float32Array: Float32Array): ArrayBuffer {
   const int16Array = new Int16Array(float32Array.length);
