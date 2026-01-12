@@ -6,11 +6,15 @@ export const BANK_NAME = 'Centenary Bank';
 export const ACCOUNT_NAME = 'Christ Life Bweyogerere';
 export const CHURCH_LOCATION = 'North Park Plaza, Opp. UNBS HDQTRS, Bweyogerere';
 
+// Merchant Codes for Mobile Money
+export const MERCHANT_MTN = '726123';
+export const MERCHANT_AIRTEL = '4380286';
+
 export const ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'sunday-garage',
     title: 'Sunday Garage',
-    image: 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&q=80&w=800', // Placeholder: Vibrant purple/gold theme
+    image: 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&q=80&w=800', 
     description: 'Join us every Sunday! 1st Service: 9:00AM - 11:00AM | 2nd Service: 11:30PM - 1:00PM'
   },
   {
