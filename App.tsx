@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { View } from './types';
 import { BottomNav } from './components/BottomNav';
@@ -8,13 +9,18 @@ import { Music } from './views/Music';
 import { Giving } from './views/Giving';
 import { SectorDetail } from './views/SectorDetail';
 import { LiveStream } from './views/LiveStream';
+import { Login } from './views/Login';
 import { VoiceAssistant } from './components/VoiceAssistant';
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setView] = useState<View>(View.HOME);
 
   const renderView = () => {
-    // If it's a sub-group view, render SectorDetail
+    if (!isAuthenticated) {
+      return <Login onLogin={() => setIsAuthenticated(true)} />;
+    }
+
     if (currentView.startsWith('GROUP_')) {
         return <SectorDetail view={currentView} onBack={() => setView(View.GROUPS)} />;
     }
@@ -37,8 +43,7 @@ const App: React.FC = () => {
     }
   };
 
-  // Hide BottomNav on Live Stream view
-  const showNav = currentView !== View.LIVE_STREAM;
+  const showNav = isAuthenticated && currentView !== View.LIVE_STREAM;
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans max-w-md mx-auto shadow-2xl overflow-hidden relative border-x border-gray-200">

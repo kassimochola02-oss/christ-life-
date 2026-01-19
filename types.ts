@@ -1,4 +1,6 @@
+
 export enum View {
+  LOGIN = 'LOGIN',
   HOME = 'HOME',
   BIBLE = 'BIBLE',
   GROUPS = 'GROUPS',
