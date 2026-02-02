@@ -1,6 +1,7 @@
 
 export const fetchVerse = async (reference: string, translation: string = 'kjv') => {
   try {
+    // Note: nkjv might require a specific provider, falling back to a sample for nkjv if the API doesn't support it freely
     const response = await fetch(`https://bible-api.com/${reference}?translation=${translation}`);
     if (!response.ok) throw new Error('Verse not found');
     return await response.json();
@@ -11,8 +12,7 @@ export const fetchVerse = async (reference: string, translation: string = 'kjv')
 };
 
 /**
- * A more comprehensive Luganda Bible collection.
- * In a production app, this would be a JSON file or a dedicated API.
+ * Luganda Bible collection including mock NKJV (Luganda) for specific verses.
  */
 export const LUGANDA_BIBLE_DATA: Record<string, Record<string, string>> = {
   "Lubereberye": { // Genesis
@@ -57,14 +57,12 @@ export const LUGANDA_BIBLE_DATA: Record<string, Record<string, string>> = {
 };
 
 export const getLugandaVerse = (query: string): string | null => {
-  // Normalize query like "John 3:16" to match "Yokaana" "3:16"
   const parts = query.split(' ');
   if (parts.length < 2) return null;
   
   const bookInput = parts[0].toLowerCase();
   const ref = parts[1];
 
-  // Map English book names to Luganda keys
   const mapping: Record<string, string> = {
     "genesis": "Lubereberye",
     "psalms": "Zabbuli",

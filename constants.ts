@@ -1,6 +1,10 @@
+
 import { Announcement, Song, BibleVerse } from './types';
 
 export const ZOOM_MEETING_URL = 'https://us06web.zoom.us/j/84928699926?pwd=motRlw9xALYfwiQutViLFYOBB4NVb8.1';
+export const YOUTUBE_URL = 'https://www.youtube.com/@thechristlifechurch';
+export const TELEGRAM_URL = 'https://t.me/thechristlifechurch';
+export const WHATSAPP_URL = 'https://chat.whatsapp.com/CLBCommunity';
 export const BANK_ACCOUNT_NUMBER = '6006741566';
 export const BANK_NAME = 'ABSA Bank';
 export const ACCOUNT_NAME = 'Christ Life Bweyogerere';
@@ -41,14 +45,4 @@ export const SONGS: Song[] = [
   { id: '1', title: 'Way Maker', artist: 'Worship Harvest', platformUrl: '#' },
   { id: '2', title: 'Goodness of God', artist: 'Worship Harvest', platformUrl: '#' },
   { id: '3', title: 'Jireh', artist: 'Worship Harvest', platformUrl: '#' },
-];
-
-export const LUGANDA_BIBLE_SAMPLE: BibleVerse[] = [
-  { book: 'Yokaana', chapter: 3, verse: 16, text: 'Kubanga Katonda yagala nnyo ensi, n’okuwaayo n’awaayo Omwana we eyazaalibwa omu yekka, buli amukkiriza aleme okubula, naye abeere n’obulamu obutaggwaawo.', version: 'Luganda' },
-  { book: 'Zabbuli', chapter: 23, verse: 1, text: 'Mukama ye Musumba wange; siremeera.', version: 'Luganda' },
-];
-
-export const ENGLISH_BIBLE_SAMPLE: BibleVerse[] = [
-  { book: 'John', chapter: 3, verse: 16, text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.', version: 'KJV' },
-  { book: 'Psalm', chapter: 23, verse: 1, text: 'The Lord is my shepherd; I shall not want.', version: 'KJV' },
 ];

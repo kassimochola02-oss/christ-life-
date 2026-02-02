@@ -1,9 +1,10 @@
+
 /**
  * API Service for Christ Life Bweyogerere
- * This service handles communication with the backend.
+ * Connects to the Python FastAPI Backend
  */
 
-const API_BASE_URL = 'http://localhost:3001/api'; // Update with your actual backend URL in production
+const API_BASE_URL = 'http://localhost:3001/api';
 
 export const CLB_API = {
   /**
@@ -12,44 +13,45 @@ export const CLB_API = {
   getAnnouncements: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/announcements`);
-      return await response.json();
+      const data = await response.json();
+      return { status: 'success', data };
     } catch (error) {
-      console.error('API Error:', error);
+      console.error('Python API Error:', error);
       return { status: 'error', data: [] };
     }
   },
 
   /**
-   * Submit a donation record
+   * Initiate a payment via the Python backend
    */
-  submitDonation: async (donationData: {
-    amount: number;
+  initiatePayment: async (paymentData: {
+    amount: string;
     phone: string;
-    type: string;
-    donorName?: string;
+    provider: string;
+    purpose: string;
   }) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/donations`, {
+      const response = await fetch(`${API_BASE_URL}/payments/initiate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(donationData),
+        body: JSON.stringify(paymentData),
       });
       return await response.json();
     } catch (error) {
-      console.error('API Error:', error);
+      console.error('Payment API Error:', error);
       throw error;
     }
   },
 
   /**
-   * Fetch live stream status
+   * Fetch the remote control state from the Admin Python server
    */
-  getStreamStatus: async () => {
+  getControlState: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/stream/status`);
+      const response = await fetch(`${API_BASE_URL}/control`);
       return await response.json();
     } catch (error) {
-      return { isLive: false };
+      return { is_live: false, global_alert: null, force_view: null };
     }
   }
 };

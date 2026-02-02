@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { View, Announcement } from '../types';
-import { ANNOUNCEMENTS, ZOOM_MEETING_URL, CHURCH_LOCATION } from '../constants';
+import { ANNOUNCEMENTS, ZOOM_MEETING_URL, CHURCH_LOCATION, YOUTUBE_URL } from '../constants';
 import { Video, Calendar, Bell, Users, MapPin, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
 
 interface HomeProps {
@@ -82,10 +83,12 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
 
       {/* Social Icons - Match Poster Footer */}
       <div className="flex justify-center space-x-6 text-gray-400 py-2 border-y border-gray-100 mx-4">
-        <Facebook size={20} className="hover:text-blue-600 transition" />
-        <Instagram size={20} className="hover:text-pink-600 transition" />
-        <Youtube size={20} className="hover:text-red-600 transition" />
-        <Twitter size={20} className="hover:text-blue-400 transition" />
+        <Facebook size={20} className="hover:text-blue-600 transition cursor-pointer" />
+        <Instagram size={20} className="hover:text-pink-600 transition cursor-pointer" />
+        <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">
+          <Youtube size={20} className="hover:text-red-600 transition" />
+        </a>
+        <Twitter size={20} className="hover:text-blue-400 transition cursor-pointer" />
       </div>
 
       {/* Weekly Highlights Section */}

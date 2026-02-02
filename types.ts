@@ -13,6 +13,7 @@ export enum View {
   GROUP_DANCE = 'GROUP_DANCE',
   GROUP_KIDS = 'GROUP_KIDS',
   GROUP_ADMIN = 'GROUP_ADMIN',
+  GROUP_SOCIAL = 'GROUP_SOCIAL',
   LIVE_STREAM = 'LIVE_STREAM'
 }
 
@@ -21,7 +22,7 @@ export interface BibleVerse {
   chapter: number;
   verse: number;
   text: string;
-  version: 'KJV' | 'Luganda';
+  version: 'KJV' | 'NKJV' | 'Luganda';
 }
 
 export interface Announcement {

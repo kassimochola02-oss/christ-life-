@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { View } from '../types';
-import { Users, Video, Music, Smile, Shield, Mic2, Star } from 'lucide-react';
+import { Users, Video, Music, Smile, Shield, Mic2, Star, Share2 } from 'lucide-react';
 
 interface GroupsProps {
   setView: (view: View) => void;
@@ -11,6 +12,7 @@ export const Groups: React.FC<GroupsProps> = ({ setView }) => {
     { id: View.GROUP_MCS, label: 'MC LIVE', icon: Users, color: 'bg-yellow-400 text-purple-900', desc: 'Wednesdays 5:30PM' },
     { id: View.GROUP_KIDS, label: 'CL KIDS', icon: Smile, color: 'bg-green-100 text-green-700', desc: 'Raising little models' },
     { id: View.GROUP_DANCE, label: 'YOUTH XP', icon: Star, color: 'bg-purple-600 text-white', desc: 'Rich & Sent' },
+    { id: View.GROUP_SOCIAL, label: 'SOCIAL MEDIA', icon: Share2, color: 'bg-blue-100 text-blue-700', desc: 'Telegram & WhatsApp' },
     { id: View.GROUP_WORSHIP, label: 'WORSHIP', icon: Mic2, color: 'bg-orange-100 text-orange-600', desc: 'The Joy Culture' },
     { id: View.GROUP_MEDIA, label: 'MEDIA TEAM', icon: Video, color: 'bg-indigo-100 text-indigo-700', desc: 'Live Stream Ops' },
     { id: View.GROUP_ADMIN, label: 'LEADERSHIP', icon: Shield, color: 'bg-gray-800 text-white', desc: 'Equip Nights' },

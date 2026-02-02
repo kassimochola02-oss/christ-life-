@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { View } from '../types';
-import { ArrowLeft, Send, Upload, PlayCircle, Lock } from 'lucide-react';
+import { ArrowLeft, Send, Upload, PlayCircle, Lock, MessageCircle, Send as TelegramIcon, ExternalLink } from 'lucide-react';
+import { TELEGRAM_URL, WHATSAPP_URL } from '../constants';
 
 interface SectorDetailProps {
   view: View;
@@ -39,6 +41,56 @@ export const SectorDetail: React.FC<SectorDetailProps> = ({ view, onBack }) => {
             <button className="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700">
                 <Send size={20} />
             </button>
+        </div>
+    </div>
+  );
+
+  const renderSocialPlatforms = () => (
+    <div className="space-y-6 animate-fade-in">
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+                <TelegramIcon size={120} className="text-blue-500" />
+            </div>
+            <div className="relative z-10">
+                <h3 className="text-xl font-black text-blue-600 uppercase italic tracking-tighter mb-2">Telegram Channel</h3>
+                <p className="text-sm text-gray-600 mb-6 font-medium">Join our main channel for real-time church announcements, devotionals, and key links.</p>
+                <a 
+                    href={TELEGRAM_URL} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg hover:bg-blue-600 active:scale-95 transition-all"
+                >
+                    <TelegramIcon size={16} />
+                    <span>Join Telegram</span>
+                </a>
+            </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+                <MessageCircle size={120} className="text-green-500" />
+            </div>
+            <div className="relative z-10">
+                <h3 className="text-xl font-black text-green-600 uppercase italic tracking-tighter mb-2">WhatsApp Community</h3>
+                <p className="text-sm text-gray-600 mb-6 font-medium">Connect with other members, share prayer requests, and stay updated with your local missional community.</p>
+                <a 
+                    href={WHATSAPP_URL} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 bg-green-500 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg hover:bg-green-600 active:scale-95 transition-all"
+                >
+                    <MessageCircle size={16} />
+                    <span>Join WhatsApp</span>
+                </a>
+            </div>
+        </div>
+
+        <div className="bg-indigo-50 rounded-3xl p-6 text-indigo-900 border border-indigo-100">
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] mb-2">Follow Us Everywhere</h4>
+            <div className="flex justify-between items-center bg-white p-4 rounded-2xl">
+                <span className="text-sm font-bold">TikTok @CLB_JOY</span>
+                <ExternalLink size={16} className="text-indigo-400" />
+            </div>
         </div>
     </div>
   );
@@ -107,6 +159,10 @@ export const SectorDetail: React.FC<SectorDetailProps> = ({ view, onBack }) => {
   let content = null;
 
   switch (view) {
+    case View.GROUP_SOCIAL:
+        title = 'Social Media';
+        content = renderSocialPlatforms();
+        break;
     case View.GROUP_MCS:
         title = 'MCs & Meetups';
         content = renderChat('Community');

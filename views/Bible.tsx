@@ -4,7 +4,7 @@ import { Search, Book, RefreshCw, ChevronRight, BookOpen } from 'lucide-react';
 import { fetchVerse, getLugandaVerse, LUGANDA_BIBLE_DATA } from '../services/bibleService';
 
 export const Bible: React.FC = () => {
-  const [version, setVersion] = useState<'KJV' | 'Luganda'>('Luganda');
+  const [version, setVersion] = useState<'KJV' | 'NKJV' | 'Luganda'>('Luganda');
   const [query, setQuery] = useState('John 3:16');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ reference: string; text: string } | null>(null);
@@ -25,11 +25,11 @@ export const Bible: React.FC = () => {
         setResult({ reference: query, text: "Oluniriri luno terunnaba kuteekebwa mu tterekero lyaffe ery'ebitabo erya digital. Tuneeyongera okwongerako ebirala." });
       }
     } else {
-      const data = await fetchVerse(query);
+      const data = await fetchVerse(query, version.toLowerCase());
       if (data) {
         setResult({ reference: data.reference, text: data.text });
       } else {
-        setResult({ reference: query, text: "Verse not found in KJV. Try searching for 'John 3:16' or 'Genesis 1:1'." });
+        setResult({ reference: query, text: `Verse not found in ${version}. Try searching for 'John 3:16'.` });
       }
     }
     setLoading(false);
@@ -38,7 +38,6 @@ export const Bible: React.FC = () => {
   const handleBrowseSelect = (book: string, verseKey: string) => {
     setQuery(`${book} ${verseKey}`);
     setMode('READ');
-    // We'll let the effect or manual call trigger the search
   };
 
   useEffect(() => {
@@ -58,22 +57,30 @@ export const Bible: React.FC = () => {
           </button>
         </div>
         
-        <div className="flex space-x-2 bg-gray-100 p-1 rounded-2xl mb-4">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-2xl mb-4 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setVersion('Luganda')}
-            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+            className={`flex-1 min-w-[80px] py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
               version === 'Luganda' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400'
             }`}
           >
             Luganda
           </button>
           <button
+            onClick={() => setVersion('NKJV')}
+            className={`flex-1 min-w-[80px] py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+              version === 'NKJV' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400'
+            }`}
+          >
+            NKJV
+          </button>
+          <button
             onClick={() => setVersion('KJV')}
-            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+            className={`flex-1 min-w-[80px] py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
               version === 'KJV' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400'
             }`}
           >
-            English (KJV)
+            KJV
           </button>
         </div>
 
