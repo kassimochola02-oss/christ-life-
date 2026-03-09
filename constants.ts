@@ -14,30 +14,44 @@ export const CHURCH_LOCATION = 'North Park Plaza, Opp. UNBS HDQTRS, Bweyogerere'
 export const MERCHANT_MTN = '726123';
 export const MERCHANT_AIRTEL = '4380286';
 
+export const CHURCH_LOGO = '/logo.jpg';
+
 export const ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'sunday-garage',
     title: 'Sunday Garage',
-    image: 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?auto=format&fit=crop&q=80&w=800', 
+    image: '/444.jpg', 
     description: 'Join us every Sunday! 1st Service: 9:00AM - 11:00AM | 2nd Service: 11:30PM - 1:00PM'
   },
   {
     id: 'mc-live',
     title: 'MC Live is ON TODAY!',
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
+    image: '/MC.png',
     description: 'Every Wednesday at 5:30PM in all our Missional Communities. 2025: The Year of a Glorious Destiny.'
   },
   {
     id: 'equip-night',
     title: 'MC Leaders Equip Night',
-    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=800',
+    image: '/2222.jpg',
     description: 'Thoroughly equipped for every good work. Every Tuesday at 8:00PM.'
   },
   {
     id: 'youth-xp',
     title: 'Youth XP',
-    image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800',
+    image: '/1111.jpg',
     description: "WE R' Rich, Anointed, Young & Sent. The vibrant youth community of CLB."
+  },
+  {
+    id: 'prayer-night',
+    title: 'Night of Prayer',
+    image: '/6666.jpg',
+    description: 'A night of deep encounter and spiritual breakthrough. Join us this Friday at 9:00PM.'
+  },
+  {
+    id: 'worship-night',
+    title: 'Worship Experience',
+    image: '/7777.jpg',
+    description: 'Come and experience the presence of God through heartfelt worship and praise.'
   }
 ];
 

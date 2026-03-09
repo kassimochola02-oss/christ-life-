@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { View, Announcement } from '../types';
-import { ANNOUNCEMENTS, ZOOM_MEETING_URL, CHURCH_LOCATION, YOUTUBE_URL } from '../constants';
+import { ANNOUNCEMENTS, ZOOM_MEETING_URL, CHURCH_LOCATION, YOUTUBE_URL, CHURCH_LOGO } from '../constants';
 import { Video, Calendar, Bell, Users, MapPin, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
 
 interface HomeProps {
@@ -15,7 +15,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
         <div className="flex items-center space-x-3">
           {/* Main Logo Representation */}
           <div className="w-12 h-12 bg-black rounded-full border-2 border-yellow-500 flex items-center justify-center overflow-hidden shadow-lg">
-             <span className="text-[8px] font-bold text-white text-center leading-none">The<br/><span className="text-yellow-500 text-[10px]">Chris</span><br/>Life!</span>
+             <img src={CHURCH_LOGO} alt="CLB Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           </div>
           <div>
             <h1 className="text-xl font-black text-gray-900 leading-tight tracking-tight uppercase">CLB Church</h1>

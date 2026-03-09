@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, ShieldCheck } from 'lucide-react';
 
+import { CHURCH_LOGO } from '../constants';
+
 interface LoginProps {
   onLogin: () => void;
 }
@@ -30,8 +32,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
       {/* Header / Logo */}
       <div className="text-center mb-10 z-10">
-        <div className="w-24 h-24 bg-black rounded-full border-4 border-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-slow">
-           <span className="text-[14px] font-black text-white text-center leading-none">The<br/><span className="text-yellow-500 text-[18px]">Chris</span><br/>Life!</span>
+        <div className="w-24 h-24 bg-black rounded-full border-4 border-yellow-500 flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce-slow overflow-hidden">
+           <img src={CHURCH_LOGO} alt="CLB Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         </div>
         <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tighter italic">Welcome Home</h1>
         <p className="text-indigo-600 font-bold text-xs tracking-[0.2em] uppercase mt-1">Raising Role Models</p>
